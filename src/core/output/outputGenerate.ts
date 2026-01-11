@@ -21,6 +21,7 @@ import {
 } from './outputStyleDecorate.js';
 import { getMarkdownTemplate } from './outputStyles/markdownStyle.js';
 import { getPlainTemplate } from './outputStyles/plainStyle.js';
+import { getSqlTemplate } from './outputStyles/sqlStyle.js';
 import { getXmlTemplate } from './outputStyles/xmlStyle.js';
 
 // Cache for compiled Handlebars templates to avoid recompilation on every call
@@ -42,6 +43,9 @@ const getCompiledTemplate = (style: string): Handlebars.TemplateDelegate => {
       break;
     case 'plain':
       template = getPlainTemplate();
+      break;
+    case 'sql':
+      template = getSqlTemplate();
       break;
     default:
       throw new RepomixError(`Unsupported output style for handlebars template: ${style}`);
@@ -289,6 +293,7 @@ export const generateOutput = async (
       return deps.generateParsableJsonOutput(renderContext);
     case 'markdown':
     case 'plain':
+    case 'sql':
       return deps.generateHandlebarOutput(config, renderContext, sortedProcessedFiles);
     default:
       throw new RepomixError(`Unsupported output style: ${config.output.style}`);

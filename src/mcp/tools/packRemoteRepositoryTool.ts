@@ -44,10 +44,10 @@ const packRemoteRepositoryInputSchema = z.object({
     .default(10)
     .describe('Number of largest files by size to display in the metrics summary for codebase analysis (default: 10)'),
   style: z
-    .enum(['xml', 'markdown', 'json', 'plain'])
+    .enum(['xml', 'markdown', 'json', 'plain', 'sql', 'all'])
     .default('xml')
     .describe(
-      'Output format style: xml (structured tags, default), markdown (human-readable with code blocks), json (machine-readable key-value), or plain (simple text with separators)',
+      'Output format style: xml (structured tags, default), markdown (human-readable with code blocks), json (machine-readable key-value), plain (simple text with separators), sql (sql database insert statements), or all (generate all formats)',
     ),
 });
 

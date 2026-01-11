@@ -29,7 +29,7 @@ The user might ask in various ways:
 
 ## Available Options
 
-- `--style <format>`: Output format (xml, markdown, json, plain)
+- `--style <format>`: Output format (xml, markdown, json, plain, sql, all)
 - `--include <patterns>`: Include only matching patterns (e.g., "src/**/*.ts,**/*.md")
 - `--ignore <patterns>`: Additional ignore patterns
 - `--compress`: Enable Tree-sitter compression (~70% token reduction)

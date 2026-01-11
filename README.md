@@ -145,7 +145,7 @@ name, fill in any optional details, and click the **Pack** button to see your ge
 
 The website offers several convenient features:
 
-- Customizable output format (XML, Markdown, or Plain Text)
+- Customizable output format (XML, Markdown, JSON, Plain Text, or SQL)
 - Instant token count estimation
 - Much more!
 
@@ -548,6 +548,41 @@ cat repomix-output.json | jq -r '.userProvidedHeader // "No header provided"'
 cat repomix-output.json | jq -r '.files | to_entries[] | "\(.key): \(.value | length) characters"'
 ```
 
+#### SQL Format
+
+To generate output in SQL format, use the `--style sql` option:
+
+```bash
+repomix --style sql
+```
+
+The SQL format creates a table and inserts file contents as rows:
+
+```sql
+-- Repomix Output
+-- Generated on: 2024-01-01T00:00:00.000Z
+
+/*
+File Summary
+...
+*/
+
+-- Create table for files
+CREATE TABLE IF NOT EXISTS repository_files (
+    path TEXT PRIMARY KEY,
+    content TEXT
+);
+
+-- Insert files
+INSERT INTO repository_files (path, content) VALUES ('src/index.js', '// File contents here...');
+INSERT INTO repository_files (path, content) VALUES ('src/utils.js', '// File contents here...');
+```
+
+This format is useful for:
+- **Database analysis**: Load your codebase into a SQL database for complex querying
+- **Structured data processing**: Easily import into tools that support SQL
+- **Relational mapping**: Analyze file relationships using SQL queries
+
 #### Plain Text Format
 
 To generate output in plain text format, use the `--style plain` option:
@@ -614,7 +649,7 @@ Instruction
 
 #### Repomix Output Options
 - `-o, --output <file>`: Output file path (default: repomix-output.xml, use "-" for stdout)
-- `--style <style>`: Output format: xml, markdown, json, or plain (default: xml)
+- `--style <style>`: Output format: xml, markdown, json, plain, or sql (default: xml)
 - `--parsable-style`: Escape special characters to ensure valid XML/Markdown (needed when output contains code that breaks formatting)
 - `--compress`: Extract essential code structure (classes, functions, interfaces) using Tree-sitter parsing
 - `--output-show-line-numbers`: Prefix each line with its line number in the output
@@ -1279,7 +1314,7 @@ Here's an explanation of the configuration options:
 |----------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------|
 | `input.maxFileSize`              | Maximum file size in bytes to process. Files larger than this will be skipped                                                | `50000000`            |
 | `output.filePath`                | The name of the output file                                                                                                  | `"repomix-output.xml"` |
-| `output.style`                   | The style of the output (`xml`, `markdown`, `json`, `plain`)                                                                 | `"xml"`                |
+| `output.style`                   | The style of the output (`xml`, `markdown`, `json`, `plain`, `sql`)                                                          | `"xml"`                |
 | `output.parsableStyle`           | Whether to escape the output based on the chosen style schema. Note that this can increase token count.                      | `false`                |
 | `output.compress`                | Whether to perform intelligent code extraction to reduce token count                                                         | `false`                |
 | `output.headerText`              | Custom text to include in the file header                                                                                    | `null`                 |
@@ -1651,7 +1686,7 @@ See the complete workflow example [here](https://github.com/yamadashy/repomix/bl
 | `ignore` | Comma-separated glob patterns to ignore files (e.g., `**/*.test.ts,**/node_modules/**`) | `""` |
 | `output` | Relative path for the packed file (extension determines format: `.txt`, `.md`, `.xml`) | `repomix-output.xml` |
 | `compress` | Enable smart compression to reduce output size by pruning implementation details | `true` |
-| `style` | Output style (`xml`, `markdown`, `json`, `plain`) | `xml` |
+| `style` | Output style (`xml`, `markdown`, `json`, `plain`, `sql`) | `xml` |
 | `additional-args` | Extra raw arguments for the repomix CLI (e.g., `--no-file-summary --no-security-check`) | `""` |
 | `repomix-version` | Version of the npm package to install (supports semver ranges, tags, or specific versions like `0.2.25`) | `latest` |
 

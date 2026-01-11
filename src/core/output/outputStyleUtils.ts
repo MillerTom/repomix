@@ -239,5 +239,13 @@ export const registerHandlebarsHelpers = (): void => {
     return getLanguageFromFilePath(filePath);
   });
 
+  Handlebars.registerHelper('escapeSql', (content: string) => {
+    if (typeof content !== 'string') {
+      return content;
+    }
+    // Escape single quotes by doubling them
+    return content.replace(/'/g, "''");
+  });
+
   handlebarsHelpersRegistered = true;
 };

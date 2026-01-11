@@ -1,4 +1,5 @@
-import type { RepomixConfigMerged } from '../../config/configSchema.js';
+import path from 'node:path';
+import { defaultFilePathMap, type RepomixConfigMerged, type RepomixOutputStyle } from '../../config/configSchema.js';
 import { withMemoryLogging } from '../../shared/memoryUtils.js';
 import type { RepomixProgressCallback } from '../../shared/types.js';
 import type { FilesByRoot } from '../file/fileTreeGenerate.js';
@@ -126,6 +127,58 @@ const generateAndWriteSingleOutput = async (
   filePathsByRoot: FilesByRoot[] | undefined,
   deps: typeof defaultDeps,
 ): Promise<ProduceOutputResult> => {
+  if (config.output.style === 'all') {
+    const styles: RepomixOutputStyle[] = ['xml', 'markdown', 'json', 'plain', 'sql'];
+    const outputs: string[] = [];
+    const outputFiles: string[] = [];
+
+    // Determine base name for output files
+    let baseName = config.output.filePath;
+    // Remove extension if it matches one of the known extensions
+    const knownExtensions = Object.values(defaultFilePathMap).map((p) => path.extname(p));
+    const ext = path.extname(baseName);
+    if (knownExtensions.includes(ext) || ext === '.txt' || ext === '.xml' || ext === '.json' || ext === '.md' || ext === '.sql') {
+      baseName = baseName.slice(0, -ext.length);
+    }
+    
+    // If baseName is empty or just a dot (e.g. user passed output as directory or something weird), fallback
+    if (!baseName || baseName === '.') {
+      baseName = 'repomix-output';
+    }
+
+    progressCallback('Generating all output formats...');
+
+    for (const style of styles) {
+      const defaultName = defaultFilePathMap[style];
+      const extension = path.extname(defaultName);
+      const filePath = `${baseName}${extension}`;
+
+      const styleConfig: RepomixConfigMerged = {
+        ...config,
+        output: {
+          ...config.output,
+          style: style,
+          filePath: filePath,
+        },
+      };
+
+      const output = await withMemoryLogging(`Generate Output (${style})`, () =>
+        deps.generateOutput(rootDirs, styleConfig, processedFiles, allFilePaths, gitDiffResult, gitLogResult, filePathsByRoot),
+      );
+
+      await withMemoryLogging(`Write Output (${style})`, () => deps.writeOutputToDisk(output, styleConfig));
+
+      outputs.push(output);
+      outputFiles.push(filePath);
+    }
+
+    return {
+      outputFiles,
+      // Use XML (index 0) for metrics as it's the default/canonical format
+      outputForMetrics: outputs[0],
+    };
+  }
+
   const output = await withMemoryLogging('Generate Output', () =>
     deps.generateOutput(rootDirs, config, processedFiles, allFilePaths, gitDiffResult, gitLogResult, filePathsByRoot),
   );

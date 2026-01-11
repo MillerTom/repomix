@@ -2,7 +2,7 @@ import type { TiktokenEncoding } from 'tiktoken';
 import { z } from 'zod';
 
 // Output style enum
-export const repomixOutputStyleSchema = z.enum(['xml', 'markdown', 'json', 'plain']);
+export const repomixOutputStyleSchema = z.enum(['xml', 'markdown', 'json', 'plain', 'sql', 'all']);
 export type RepomixOutputStyle = z.infer<typeof repomixOutputStyleSchema>;
 
 // Default values map
@@ -11,6 +11,8 @@ export const defaultFilePathMap: Record<RepomixOutputStyle, string> = {
   markdown: 'repomix-output.md',
   plain: 'repomix-output.txt',
   json: 'repomix-output.json',
+  sql: 'repomix-output.sql',
+  all: 'repomix-output', // Placeholder, not used directly for file writing
 } as const;
 
 // Base config schema
