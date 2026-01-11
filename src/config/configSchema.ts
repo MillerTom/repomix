@@ -86,8 +86,8 @@ export const repomixConfigDefaultSchema = z.object({
       .default(50 * 1024 * 1024), // Default: 50MB
   }),
   output: z.object({
-    filePath: z.string().default(defaultFilePathMap.xml),
-    style: repomixOutputStyleSchema.default('xml'),
+    filePath: z.string().default(defaultFilePathMap.all),
+    style: repomixOutputStyleSchema.default('all'),
     parsableStyle: z.boolean().default(false),
     headerText: z.string().optional(),
     instructionFilePath: z.string().optional(),

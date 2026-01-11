@@ -41,9 +41,9 @@ const packCodebaseInputSchema = z.object({
     .describe('Number of largest files by size to display in the metrics summary for codebase analysis (default: 10)'),
   style: z
     .enum(['xml', 'markdown', 'json', 'plain', 'sql', 'all'])
-    .default('xml')
+    .default('all')
     .describe(
-      'Output format style: xml (structured tags, default), markdown (human-readable with code blocks), json (machine-readable key-value), plain (simple text with separators), sql (sql database insert statements), or all (generate all formats)',
+      'Output format style: xml (structured tags), markdown (human-readable with code blocks), json (machine-readable key-value), plain (simple text with separators), sql (sql database insert statements), or all (generate all formats, default)',
     ),
 });
 
