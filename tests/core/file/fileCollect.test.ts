@@ -14,7 +14,7 @@ import type { WorkerOptions, WorkerRuntime } from '../../../src/shared/processCo
 import { createMockConfig } from '../../testing/testUtils.js';
 
 // Define the max file size constant for tests
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
 
 vi.mock('node:fs/promises');
 vi.mock('is-binary-path');

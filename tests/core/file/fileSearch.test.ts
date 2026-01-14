@@ -162,6 +162,8 @@ describe('fileSearch', () => {
 
       expect(patterns.length).toBeGreaterThan(0);
       expect(patterns).toContain('**/node_modules/**');
+      expect(patterns).toContain('**/.aider/**');
+      expect(patterns).toContain('**/*.mp4');
     });
 
     test('should include custom patterns', async () => {
@@ -175,7 +177,7 @@ describe('fileSearch', () => {
 
       const patterns = await getIgnorePatterns(process.cwd(), mockConfig);
 
-      expect(patterns).toEqual(['repomix-output.xml', '*.custom', 'temp/']);
+      expect(patterns).toEqual(['repomix-output', '*.custom', 'temp/']);
     });
 
     test('should combine default and custom patterns', async () => {
