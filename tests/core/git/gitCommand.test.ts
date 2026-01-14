@@ -15,6 +15,11 @@ vi.mock('../../../src/shared/logger');
 const expectGitRemoteOpts = expect.objectContaining({
   timeout: 30000,
   env: expect.objectContaining({ GIT_TERMINAL_PROMPT: '0' }),
+  maxBuffer: 128 * 1024 * 1024,
+});
+
+const expectGitDefaultOpts = expect.objectContaining({
+  maxBuffer: 128 * 1024 * 1024,
 });
 
 describe('gitCommand', () => {
@@ -36,15 +41,11 @@ file2.ts
       const result = await execGitLogFilenames('/test/dir', 5, { execFileAsync: mockFileExecAsync });
 
       expect(result).toEqual(['file1.ts', 'file2.ts', 'file1.ts', 'file3.ts', 'file2.ts']);
-      expect(mockFileExecAsync).toHaveBeenCalledWith('git', [
-        '-C',
-        '/test/dir',
-        'log',
-        '--pretty=format:',
-        '--name-only',
-        '-n',
-        '5',
-      ]);
+      expect(mockFileExecAsync).toHaveBeenCalledWith(
+        'git',
+        ['-C', '/test/dir', 'log', '--pretty=format:', '--name-only', '-n', '5'],
+        expectGitDefaultOpts,
+      );
     });
 
     test('should return empty array when git command fails', async () => {
@@ -65,7 +66,11 @@ file2.ts
       const result = await execGitDiff('/test/dir', [], { execFileAsync: mockFileExecAsync });
 
       expect(result).toBe(mockDiff);
-      expect(mockFileExecAsync).toHaveBeenCalledWith('git', ['-C', '/test/dir', 'diff', '--no-color']);
+      expect(mockFileExecAsync).toHaveBeenCalledWith(
+        'git',
+        ['-C', '/test/dir', 'diff', '--no-color'],
+        expectGitDefaultOpts,
+      );
     });
 
     test('should throw error when git diff fails', async () => {
@@ -301,16 +306,11 @@ test/feature.test.ts`;
       const result = await execGitLog('/test/dir', 10, '%x00', { execFileAsync: mockFileExecAsync });
 
       expect(result).toBe(mockOutput);
-      expect(mockFileExecAsync).toHaveBeenCalledWith('git', [
-        '-C',
-        '/test/dir',
-        'log',
-        '--pretty=format:%x00%ad|%s',
-        '--date=iso',
-        '--name-only',
-        '-n',
-        '10',
-      ]);
+      expect(mockFileExecAsync).toHaveBeenCalledWith(
+        'git',
+        ['-C', '/test/dir', 'log', '--pretty=format:%x00%ad|%s', '--date=iso', '--name-only', '-n', '10'],
+        expectGitDefaultOpts,
+      );
     });
 
     test('should use custom record separator when provided', async () => {
@@ -322,16 +322,11 @@ file1.txt`;
       const result = await execGitLog('/test/dir', 5, customSeparator, { execFileAsync: mockFileExecAsync });
 
       expect(result).toBe(mockOutput);
-      expect(mockFileExecAsync).toHaveBeenCalledWith('git', [
-        '-C',
-        '/test/dir',
-        'log',
-        `--pretty=format:${customSeparator}%ad|%s`,
-        '--date=iso',
-        '--name-only',
-        '-n',
-        '5',
-      ]);
+      expect(mockFileExecAsync).toHaveBeenCalledWith(
+        'git',
+        ['-C', '/test/dir', 'log', `--pretty=format:${customSeparator}%ad|%s`, '--date=iso', '--name-only', '-n', '5'],
+        expectGitDefaultOpts,
+      );
     });
 
     test('should throw error when git log fails', async () => {
@@ -352,16 +347,11 @@ file.txt`;
       const result = await execGitLog('/test/dir', 50, separator, { execFileAsync: mockFileExecAsync });
 
       expect(result).toBe(mockOutput);
-      expect(mockFileExecAsync).toHaveBeenCalledWith('git', [
-        '-C',
-        '/test/dir',
-        'log',
-        `--pretty=format:${separator}%ad|%s`,
-        '--date=iso',
-        '--name-only',
-        '-n',
-        '50',
-      ]);
+      expect(mockFileExecAsync).toHaveBeenCalledWith(
+        'git',
+        ['-C', '/test/dir', 'log', `--pretty=format:${separator}%ad|%s`, '--date=iso', '--name-only', '-n', '50'],
+        expectGitDefaultOpts,
+      );
     });
   });
 

@@ -12,7 +12,12 @@ describe('produceOutput', () => {
   describe('single output mode', () => {
     it('generates and writes single output file', async () => {
       const mockDeps = createMockDeps();
-      const mockConfig = createMockConfig();
+      const mockConfig = createMockConfig({
+        output: {
+          style: 'xml',
+          filePath: 'repomix-output.xml',
+        },
+      });
       const processedFiles = [{ path: 'file.ts', content: 'content' }];
       const allFilePaths = ['file.ts'];
       const progressCallback = vi.fn();
@@ -48,7 +53,12 @@ describe('produceOutput', () => {
 
     it('passes git diff and log results to generateOutput', async () => {
       const mockDeps = createMockDeps();
-      const mockConfig = createMockConfig();
+      const mockConfig = createMockConfig({
+        output: {
+          style: 'xml',
+          filePath: 'repomix-output.xml',
+        },
+      });
       const gitDiffResult = { workTreeDiffContent: 'diff', stagedDiffContent: '' };
       const gitLogResult = { logContent: 'logs', commits: [] };
 
@@ -77,7 +87,12 @@ describe('produceOutput', () => {
 
     it('calls progress callback with correct message', async () => {
       const mockDeps = createMockDeps();
-      const mockConfig = createMockConfig();
+      const mockConfig = createMockConfig({
+        output: {
+          style: 'xml',
+          filePath: 'repomix-output.xml',
+        },
+      });
       const progressCallback = vi.fn();
 
       await produceOutput(['/root'], mockConfig, [], [], undefined, undefined, progressCallback, undefined, mockDeps);

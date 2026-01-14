@@ -134,6 +134,7 @@ const generateAndWriteSingleOutput = async (
 
     // Determine base name for output files
     let baseName = config.output.filePath;
+
     // Remove extension if it matches one of the known extensions
     const knownExtensions = Object.values(defaultFilePathMap).map((p) => path.extname(p));
     const ext = path.extname(baseName);

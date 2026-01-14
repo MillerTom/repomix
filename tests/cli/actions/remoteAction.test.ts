@@ -29,7 +29,7 @@ describe('remoteAction functions', () => {
         await fs.writeFile(path.join(directory, 'README.md'), 'Hello, world!');
       });
 
-      vi.mocked(fs.copyFile).mockResolvedValue(undefined);
+      vi.mocked(fs.cp).mockResolvedValue(undefined);
       await runRemoteAction(
         'https://gitlab.com/owner/repo.git',
         {},
@@ -72,7 +72,7 @@ describe('remoteAction functions', () => {
       const execGitShallowCloneMock = vi.fn();
       const isGitInstalledMock = vi.fn().mockResolvedValue(false); // Git is NOT installed
 
-      vi.mocked(fs.copyFile).mockResolvedValue(undefined);
+      vi.mocked(fs.cp).mockResolvedValue(undefined);
       await runRemoteAction(
         'yamadashy/repomix',
         {},
@@ -118,7 +118,7 @@ describe('remoteAction functions', () => {
         await fs.writeFile(path.join(directory, 'README.md'), 'Hello, world!');
       });
 
-      vi.mocked(fs.copyFile).mockResolvedValue(undefined);
+      vi.mocked(fs.cp).mockResolvedValue(undefined);
       await runRemoteAction(
         'yamadashy/repomix',
         {},
@@ -162,7 +162,7 @@ describe('remoteAction functions', () => {
       const execGitShallowCloneMock = vi.fn();
       const isGitInstalledMock = vi.fn().mockResolvedValue(false); // Git is NOT installed
 
-      vi.mocked(fs.copyFile).mockResolvedValue(undefined);
+      vi.mocked(fs.cp).mockResolvedValue(undefined);
 
       await expect(
         runRemoteAction(
@@ -212,11 +212,15 @@ describe('remoteAction functions', () => {
       const targetDir = '/target/dir';
       const fileName = 'output.txt';
 
-      vi.mocked(fs.copyFile).mockResolvedValue();
+      vi.mocked(fs.cp).mockResolvedValue();
 
       await copyOutputToCurrentDirectory(sourceDir, targetDir, fileName);
 
-      expect(fs.copyFile).toHaveBeenCalledWith(path.resolve(sourceDir, fileName), path.resolve(targetDir, fileName));
+      expect(fs.cp).toHaveBeenCalledWith(
+        path.resolve(sourceDir, fileName),
+        path.resolve(targetDir, fileName),
+        { recursive: true },
+      );
     });
 
     test('should skip copy when source and target are the same', async () => {
@@ -224,12 +228,12 @@ describe('remoteAction functions', () => {
       const targetDir = '/tmp/dir';
       const fileName = 'output.txt';
 
-      vi.mocked(fs.copyFile).mockResolvedValue();
+      vi.mocked(fs.cp).mockResolvedValue();
 
       await copyOutputToCurrentDirectory(sourceDir, targetDir, fileName);
 
-      // Should not call copyFile when source and target are the same
-      expect(fs.copyFile).not.toHaveBeenCalled();
+      // Should not call cp when source and target are the same
+      expect(fs.cp).not.toHaveBeenCalled();
     });
 
     test('should skip copy when absolute path resolves to same location', async () => {
@@ -237,14 +241,14 @@ describe('remoteAction functions', () => {
       const targetDir = process.cwd();
       const absolutePath = '/tmp/my_private_dir/output.xml';
 
-      vi.mocked(fs.copyFile).mockResolvedValue();
+      vi.mocked(fs.cp).mockResolvedValue();
 
       await copyOutputToCurrentDirectory(sourceDir, targetDir, absolutePath);
 
       // When absolute path is used, both source and target resolve to the same path
       // path.resolve('/tmp/repomix-123', '/tmp/my_private_dir/output.xml') -> '/tmp/my_private_dir/output.xml'
       // path.resolve(process.cwd(), '/tmp/my_private_dir/output.xml') -> '/tmp/my_private_dir/output.xml'
-      expect(fs.copyFile).not.toHaveBeenCalled();
+      expect(fs.cp).not.toHaveBeenCalled();
     });
 
     test('should throw error when copy fails', async () => {
@@ -252,7 +256,7 @@ describe('remoteAction functions', () => {
       const targetDir = '/target/dir';
       const fileName = 'output.txt';
 
-      vi.mocked(fs.copyFile).mockRejectedValue(new Error('Permission denied'));
+      vi.mocked(fs.cp).mockRejectedValue(new Error('Permission denied'));
 
       await expect(copyOutputToCurrentDirectory(sourceDir, targetDir, fileName)).rejects.toThrow(
         'Failed to copy output file',
@@ -266,7 +270,7 @@ describe('remoteAction functions', () => {
 
       const epermError = new Error('operation not permitted') as NodeJS.ErrnoException;
       epermError.code = 'EPERM';
-      vi.mocked(fs.copyFile).mockRejectedValue(epermError);
+      vi.mocked(fs.cp).mockRejectedValue(epermError);
 
       await expect(copyOutputToCurrentDirectory(sourceDir, targetDir, fileName)).rejects.toThrow(
         /Permission denied.*protected.*--output.*--stdout/s,
@@ -280,7 +284,7 @@ describe('remoteAction functions', () => {
 
       const eaccesError = new Error('permission denied') as NodeJS.ErrnoException;
       eaccesError.code = 'EACCES';
-      vi.mocked(fs.copyFile).mockRejectedValue(eaccesError);
+      vi.mocked(fs.cp).mockRejectedValue(eaccesError);
 
       await expect(copyOutputToCurrentDirectory(sourceDir, targetDir, fileName)).rejects.toThrow(
         /Permission denied.*protected.*--output.*--stdout/s,
