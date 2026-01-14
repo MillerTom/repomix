@@ -40,6 +40,7 @@ export interface CliOptions extends OptionValues {
   // Remote Repository Options
   remote?: string;
   remoteBranch?: string;
+  search?: string;
 
   // Configuration Options
   config?: string;

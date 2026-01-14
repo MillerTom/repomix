@@ -11,6 +11,7 @@ import { runDefaultAction } from './actions/defaultAction.js';
 import { runInitAction } from './actions/initAction.js';
 import { runMcpAction } from './actions/mcpAction.js';
 import { runRemoteAction } from './actions/remoteAction.js';
+import { runSearchAction } from './actions/searchAction.js';
 import { runVersionAction } from './actions/versionAction.js';
 import { isValidRemoteValue } from '../core/git/gitRemoteParse.js';
 import type { CliOptions } from './types.js';
@@ -39,6 +40,9 @@ const semanticSuggestionMap: Record<string, string[]> = {
   whitelist: ['--include'],
   clone: ['--remote'],
   git: ['--remote'],
+  find: ['--search'],
+  query: ['--search'],
+  google: ['--search'],
   minimize: ['--compress'],
   reduce: ['--compress'],
   'strip-comments': ['--remove-comments'],
@@ -161,6 +165,7 @@ export const run = async () => {
       .optionsGroup('Remote Repository Options')
       .option('--remote <url>', 'Clone and pack a remote repository (GitHub URL or user/repo format)')
       .option('--remote-branch <name>', "Specific branch, tag, or commit to use (default: repository's default branch)")
+      .option('-s, --search <query>', 'Search for a GitHub repository using Google Search via Gemini API')
       // Configuration Options
       .optionsGroup('Configuration Options')
       .option('-c, --config <path>', 'Use custom config file instead of repomix.config.json')
@@ -290,6 +295,10 @@ export const runCli = async (directories: string[], cwd: string, options: CliOpt
   if (options.init) {
     await runInitAction(cwd, options.global || false);
     return;
+  }
+
+  if (options.search) {
+    return await runSearchAction(options.search, options);
   }
 
   if (options.remote) {
