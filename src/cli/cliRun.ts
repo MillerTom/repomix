@@ -1,4 +1,6 @@
 import process from 'node:process';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { Option, program } from 'commander';
 import pc from 'picocolors';
 import { getVersion } from '../core/file/packageJsonParse.js';
@@ -10,6 +12,7 @@ import { runInitAction } from './actions/initAction.js';
 import { runMcpAction } from './actions/mcpAction.js';
 import { runRemoteAction } from './actions/remoteAction.js';
 import { runVersionAction } from './actions/versionAction.js';
+import { isValidRemoteValue } from '../core/git/gitRemoteParse.js';
 import type { CliOptions } from './types.js';
 
 // Semantic mapping for CLI suggestions
@@ -50,7 +53,7 @@ export const run = async () => {
   try {
     program
       .description('Repomix - Pack your repository into a single AI-friendly file')
-      .argument('[directories...]', 'list of directories to process', ['.'])
+      .argument('[directories...]', 'list of directories or remote repositories to process', ['.'])
       // Basic Options
       .optionsGroup('Basic Options')
       .option('-v, --version', 'Show version information and exit')
@@ -250,6 +253,24 @@ export const runCli = async (directories: string[], cwd: string, options: CliOpt
   logger.trace('directories:', directories);
   logger.trace('cwd:', cwd);
   logger.trace('options:', options);
+
+  // Default to remote if positional argument matches remote pattern and doesn't exist locally
+  if (!options.remote && directories.length === 1 && directories[0] !== '.') {
+    const potentialRemote = directories[0];
+    if (isValidRemoteValue(potentialRemote)) {
+      const absolutePath = path.resolve(cwd, potentialRemote);
+      const existsLocally = await fs
+        .stat(absolutePath)
+        .then((s) => s.isDirectory())
+        .catch(() => false);
+      if (!existsLocally) {
+        logger.trace(`Treating positional argument as remote: ${potentialRemote}`);
+        options.remote = potentialRemote;
+        // Clear directories to avoid treating it as a local path
+        directories = [];
+      }
+    }
+  }
 
   if (options.mcp) {
     return await runMcpAction();

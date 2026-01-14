@@ -192,6 +192,12 @@ To pack a specific directory:
 repomix path/to/directory
 ```
 
+To pack a remote repository (GitHub shorthand or URL):
+
+```bash
+repomix yamadashy/repomix
+```
+
 To pack specific files or directories
 using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax):
 
@@ -753,7 +759,13 @@ Using `npx repomix` is generally more convenient as it always uses the latest ve
 Repomix supports processing remote Git repositories without the need for manual cloning. This feature allows you to
 quickly analyze any public Git repository with a single command.
 
-To process a remote repository, use the `--remote` option followed by the repository URL:
+To process a remote repository, you can provide the repository URL or shorthand directly as an argument:
+
+```bash
+repomix yamadashy/repomix
+```
+
+Alternatively, you can use the `--remote` option:
 
 ```bash
 repomix --remote https://github.com/yamadashy/repomix
