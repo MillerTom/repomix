@@ -237,7 +237,7 @@ export const copyOutputToCurrentDirectory = async (
     // Create target directory if it doesn't exist
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
 
-    await fs.copyFile(sourcePath, targetPath);
+    await fs.cp(sourcePath, targetPath, { recursive: true });
   } catch (error) {
     const nodeError = error as NodeJS.ErrnoException;
 

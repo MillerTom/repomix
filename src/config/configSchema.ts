@@ -83,7 +83,7 @@ export const repomixConfigDefaultSchema = z.object({
       .number()
       .int()
       .min(1)
-      .default(50 * 1024 * 1024), // Default: 50MB
+      .default(1 * 1024 * 1024), // Default: 1MB
   }),
   output: z.object({
     filePath: z.string().default(defaultFilePathMap.all),

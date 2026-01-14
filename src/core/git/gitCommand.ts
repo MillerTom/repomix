@@ -8,8 +8,10 @@ import { logger } from '../../shared/logger.js';
 const execFileAsync = promisify(execFile);
 
 const GIT_REMOTE_TIMEOUT = 30000;
+const GIT_MAX_BUFFER = 128 * 1024 * 1024; // 128MB
 const gitRemoteEnv = { ...process.env, GIT_TERMINAL_PROMPT: '0' };
-const gitRemoteOpts = { timeout: GIT_REMOTE_TIMEOUT, env: gitRemoteEnv };
+const gitRemoteOpts = { timeout: GIT_REMOTE_TIMEOUT, env: gitRemoteEnv, maxBuffer: GIT_MAX_BUFFER };
+const gitDefaultOpts = { maxBuffer: GIT_MAX_BUFFER };
 
 export const execGitLogFilenames = async (
   directory: string,
@@ -19,15 +21,11 @@ export const execGitLogFilenames = async (
   },
 ): Promise<string[]> => {
   try {
-    const result = await deps.execFileAsync('git', [
-      '-C',
-      directory,
-      'log',
-      '--pretty=format:',
-      '--name-only',
-      '-n',
-      maxCommits.toString(),
-    ]);
+    const result = await deps.execFileAsync(
+      'git',
+      ['-C', directory, 'log', '--pretty=format:', '--name-only', '-n', maxCommits.toString()],
+      gitDefaultOpts,
+    );
 
     return result.stdout.split('\n').filter(Boolean);
   } catch (error) {
@@ -44,13 +42,17 @@ export const execGitDiff = async (
   },
 ): Promise<string> => {
   try {
-    const result = await deps.execFileAsync('git', [
-      '-C',
-      directory,
-      'diff',
-      '--no-color', // Avoid ANSI color codes
-      ...options,
-    ]);
+    const result = await deps.execFileAsync(
+      'git',
+      [
+        '-C',
+        directory,
+        'diff',
+        '--no-color', // Avoid ANSI color codes
+        ...options,
+      ],
+      gitDefaultOpts,
+    );
 
     return result.stdout || '';
   } catch (error) {
@@ -167,16 +169,20 @@ export const execGitLog = async (
   },
 ): Promise<string> => {
   try {
-    const result = await deps.execFileAsync('git', [
-      '-C',
-      directory,
-      'log',
-      `--pretty=format:${gitSeparator}%ad|%s`,
-      '--date=iso',
-      '--name-only',
-      '-n',
-      maxCommits.toString(),
-    ]);
+    const result = await deps.execFileAsync(
+      'git',
+      [
+        '-C',
+        directory,
+        'log',
+        `--pretty=format:${gitSeparator}%ad|%s`,
+        '--date=iso',
+        '--name-only',
+        '-n',
+        maxCommits.toString(),
+      ],
+      gitDefaultOpts,
+    );
 
     return result.stdout || '';
   } catch (error) {

@@ -58,6 +58,32 @@ export const defaultIgnoreList = [
   '.parcel-cache/**',
   '.sass-cache/**',
   '*.cache',
+  '**/.sqlx/**', // SQLX cache
+
+  // Web assets and minified files
+  '**/*.min.js',
+  '**/*.min.css',
+  '**/*.map',
+  '**/*.svg',
+  '**/*.png',
+  '**/*.jpg',
+  '**/*.jpeg',
+  '**/*.gif',
+  '**/*.ico',
+  '**/*.pdf',
+  '**/*.epub',
+  '**/*.mp4',
+  '**/*.mp3',
+  '**/*.wav',
+  '**/*.flac',
+  '**/*.ogg',
+  '**/*.webm',
+
+  // Documentation and generated sites
+  '**/docs/**',
+  '**/site/**',
+  '**/website/build/**',
+  '**/website/.vitepress/dist/**',
 
   // Optional REPL history
   '.node_repl_history',
@@ -118,6 +144,10 @@ export const defaultIgnoreList = [
   // repomix output
   '**/repomix-output.*',
   '**/repopack-output.*', // Legacy
+
+  // Aider-related files
+  '.aiderignore',
+  '**/.aider/**',
 
   // Essential Node.js-related entries
   '**/package-lock.json',
