@@ -97,7 +97,7 @@ export const repomixConfigDefaultSchema = z.object({
     removeComments: z.boolean().default(false),
     removeEmptyLines: z.boolean().default(false),
     compress: z.boolean().default(false),
-    topFilesLength: z.number().int().min(0).default(5),
+    topFilesLength: z.number().int().min(0).default(1000),
     showLineNumbers: z.boolean().default(false),
     truncateBase64: z.boolean().default(false),
     copyToClipboard: z.boolean().default(false),

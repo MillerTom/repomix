@@ -645,7 +645,7 @@ Instruction
 - `--stdin`: Read file paths from stdin, one per line (specified files are processed directly)
 - `--copy`: Copy the generated output to system clipboard after processing
 - `--token-count-tree [threshold]`: Show file tree with token counts; optional threshold to show only files with ≥N tokens (e.g., --token-count-tree 100)
-- `--top-files-len <number>`: Number of largest files to show in summary (default: 5, e.g., --top-files-len 20)
+- `--top-files-len <number>`: Number of largest files to show in summary (default: 1000, e.g., --top-files-len 20)
 
 #### Repomix Output Options
 - `-o, --output <file>`: Output file path (default: repomix-output.xml, use "-" for stdout)
@@ -995,12 +995,12 @@ When running as an MCP server, Repomix provides the following tools:
     - `compress`: (Optional, default: false) Enable Tree-sitter compression to extract essential code signatures and structure while removing implementation details. Reduces token usage by ~70% while preserving semantic meaning. Generally not needed since grep_repomix_output allows incremental content retrieval. Use only when you specifically need the entire codebase content for large repositories.
     - `includePatterns`: (Optional) Specify files to include using fast-glob patterns. Multiple patterns can be comma-separated (e.g., "**/*.{js,ts}", "src/**,docs/**"). Only matching files will be processed.
     - `ignorePatterns`: (Optional) Specify additional files to exclude using fast-glob patterns. Multiple patterns can be comma-separated (e.g., "test/**,*.spec.js", "node_modules/**,dist/**"). These patterns supplement .gitignore, .ignore, and built-in exclusions.
-    - `topFilesLength`: (Optional, default: 10) Number of largest files by size to display in the metrics summary for codebase analysis.
+    - `topFilesLength`: (Optional, default: 1000) Number of largest files by size to display in the metrics summary for codebase analysis.
 
 2. **attach_packed_output**: Attach an existing Repomix packed output file for AI analysis
   - Parameters:
     - `path`: Path to a directory containing repomix-output.xml or direct path to a packed repository XML file
-    - `topFilesLength`: (Optional, default: 10) Number of largest files by size to display in the metrics summary
+    - `topFilesLength`: (Optional, default: 1000) Number of largest files by size to display in the metrics summary
   - Features:
     - Accepts either a directory containing a repomix-output.xml file or a direct path to an XML file
     - Registers the file with the MCP server and returns the same structure as the pack_codebase tool
@@ -1013,7 +1013,7 @@ When running as an MCP server, Repomix provides the following tools:
     - `compress`: (Optional, default: false) Enable Tree-sitter compression to extract essential code signatures and structure while removing implementation details. Reduces token usage by ~70% while preserving semantic meaning. Generally not needed since grep_repomix_output allows incremental content retrieval. Use only when you specifically need the entire codebase content for large repositories.
     - `includePatterns`: (Optional) Specify files to include using fast-glob patterns. Multiple patterns can be comma-separated (e.g., "**/*.{js,ts}", "src/**,docs/**"). Only matching files will be processed.
     - `ignorePatterns`: (Optional) Specify additional files to exclude using fast-glob patterns. Multiple patterns can be comma-separated (e.g., "test/**,*.spec.js", "node_modules/**,dist/**"). These patterns supplement .gitignore, .ignore, and built-in exclusions.
-    - `topFilesLength`: (Optional, default: 10) Number of largest files by size to display in the metrics summary for codebase analysis.
+    - `topFilesLength`: (Optional, default: 1000) Number of largest files by size to display in the metrics summary for codebase analysis.
 
 4. **read_repomix_output**: Read the contents of a Repomix-generated output file. Supports partial reading with line range specification for large files.
   - Parameters:
@@ -1328,7 +1328,7 @@ Here's an explanation of the configuration options:
 | `output.truncateBase64`          | Whether to truncate long base64 data strings (e.g., images) to reduce token count                                            | `false`                |
 | `output.copyToClipboard`         | Whether to copy the output to system clipboard in addition to saving the file                                                | `false`                |
 | `output.splitOutput`             | Split output into multiple numbered files by maximum size per part (e.g., `1000000` for ~1MB). Keeps each file under the limit and avoids splitting files across parts | Not set                |
-| `output.topFilesLength`          | Number of top files to display in the summary. If set to 0, no summary will be displayed                                     | `5`                    |
+| `output.topFilesLength`          | Number of top files to display in the summary. If set to 0, no summary will be displayed                                     | `1000`                   |
 | `output.tokenCountTree`          | Whether to display file tree with token count summaries. Can be boolean or number (minimum token count threshold)           | `false`                |
 | `output.includeEmptyDirectories` | Whether to include empty directories in the repository structure                                                             | `false`                |
 | `output.includeFullDirectoryStructure` | When using `include` patterns, whether to display the complete directory tree (respecting ignore patterns) while still processing only the included files. Provides full repository context for AI analysis | `false`                |
@@ -1388,7 +1388,7 @@ Example configuration:
     "files": true,
     "removeComments": false,
     "removeEmptyLines": false,
-    "topFilesLength": 5,
+    "topFilesLength": 1000,
     "tokenCountTree": false, // or true, or a number like 10 for minimum token threshold
     "showLineNumbers": false,
     "truncateBase64": false,

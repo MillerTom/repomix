@@ -88,7 +88,7 @@ export const run = async () => {
       )
       .option(
         '--top-files-len <number>',
-        'Number of largest files to show in summary (default: 5, e.g., --top-files-len 20)',
+        'Number of largest files to show in summary (default: 1000, e.g., --top-files-len 20)',
         (v: string) => {
           if (!/^\d+$/.test(v)) {
             throw new RepomixError(`Invalid number for --top-files-len: '${v}'. Must be a non-negative integer.`);
